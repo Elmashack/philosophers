@@ -6,11 +6,28 @@
 /*   By: nluya <nluya@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/10 16:38:33 by nluya             #+#    #+#             */
-/*   Updated: 2021/11/17 17:58:14 by nluya            ###   ########.fr       */
+/*   Updated: 2021/11/17 19:38:11 by nluya            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
+
+void	destroy_and_free(t_all *all)
+{
+	int	i;
+
+	i = 0;
+	while (i < all->args->phil_number)
+	{
+		pthread_mutex_destroy(all->philos[i].l_fork);
+		pthread_mutex_destroy(all->philos[i].r_fork);
+		i++;
+	}
+	pthread_mutex_destroy(&all->mutexes->output);
+	free(all->mutexes);
+	free(all->philos);
+	free(all->args);
+}
 
 void	*start_act(void *ph_struct)
 {
@@ -67,4 +84,5 @@ void	philo_thread(t_all *all_info)
 		ft_error("thread can't be created");
 	if (pthread_join(all_info->dead, NULL) != 0)
 		ft_error("thread can't be joined");
+	destroy_and_free(all_info);
 }

@@ -6,7 +6,7 @@
 /*   By: nluya <nluya@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/05 17:46:23 by nluya             #+#    #+#             */
-/*   Updated: 2021/11/17 17:17:06 by nluya            ###   ########.fr       */
+/*   Updated: 2021/11/17 19:41:07 by nluya            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,5 +102,4 @@ int	main(int argc, char *argv[])
 	init_mutex(&all_info);
 	init_phil(&all_info);
 	philo_thread(&all_info);
-	destroy_mutexes(&all_info);
 }
