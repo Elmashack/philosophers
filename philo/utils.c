@@ -6,7 +6,7 @@
 /*   By: nluya <nluya@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/06 18:07:05 by nluya             #+#    #+#             */
-/*   Updated: 2021/11/27 18:33:26 by nluya            ###   ########.fr       */
+/*   Updated: 2021/11/27 19:03:53 by nluya            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,6 @@ void	my_sleep(long time_to_wait)
 	period_of_time = get_cur_time() + time_to_wait;
 	while (period_of_time > cur_time)
 	{
-		usleep(100);
 		cur_time = get_cur_time();
 	}
 }

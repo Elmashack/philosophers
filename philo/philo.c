@@ -6,7 +6,7 @@
 /*   By: nluya <nluya@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/05 17:46:23 by nluya             #+#    #+#             */
-/*   Updated: 2021/11/27 18:24:37 by nluya            ###   ########.fr       */
+/*   Updated: 2021/11/27 19:08:33 by nluya            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,7 @@ int	init_phil(t_all *all_info)
 		all_info->philos[i].last_meal = 0;
 		all_info->philos[i].eat_count = all_info->args->num_of_meals;
 		all_info->philos[i].args = all_info->args;
+		all_info->philos[i].mutex = all_info->mutexes;
 		all_info->philos[i].r_fork = &all_info->mutexes->forks[i];
 		if ((i + 1) == all_info->args->phil_number)
 			all_info->philos[i].l_fork = &all_info->mutexes->forks[0];
