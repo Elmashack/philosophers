@@ -3,75 +3,45 @@
 /*                                                        :::      ::::::::   */
 /*   philo.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: elman <elman@student.42.fr>                +#+  +:+       +#+        */
+/*   By: nluya <nluya@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/05 17:46:23 by nluya             #+#    #+#             */
-/*   Updated: 2021/11/23 22:33:58 by elman            ###   ########.fr       */
+/*   Updated: 2021/11/27 16:41:28 by nluya            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-int	init_phil(t_all *all_info)
+int	init_phil(t_all *all)
 {
-	int	i;
-
-	i = 0;
-	all_info->philos = malloc(sizeof(t_phil_data) * \
-	all_info->args->phil_num);
-	if (all_info->philos == NULL)
-		return (0);
-		all_info->philos->philo_id = i + 1;
-		all_info->philos->start_time = 0;
-		all_info->philos->last_meal = 0;
-		all_info->philos->eat_count = all_info->args->num_of_meals;
-		all_info->philos->args = all_info->args;
-		all_info->philos->r_fork = &all_info->mutexes->forks[i];
-		if ((i + 1) == all_info->args->phil_num)
-			all_info->philos[i].l_fork = &all_info->mutexes->forks[0];
-		else
-			all_info->philos[i].l_fork = &all_info->mutexes->forks[i + 1];
-		i++;
-	}
+	all->philos = malloc(sizeof(t_phil_data) * all->args->phil_num);
+	if (all->philos == NULL)
+		return (1);
+	all->philos->pid = malloc(sizeof(pid_t) * all->args->phil_num);
+	if (all->philos->pid == NULL)
+		return (1);
+	all->args->death_flag = 0;
+	all->philos->eat_count = all->args->num_of_meals;
+	all->philos->args = all->args;
+	all->philos->sems = all->sems;
 	return (0);
 }
 
-int	init_mutex(t_all *all_info)
+int	init_sems(t_all *all)
 {
-	int	i;
-
-	i = 0;
-	all_info->mutexes = malloc(sizeof(t_mutexes));
-	if (all_info->mutexes == NULL)
-		return (0);
-	if (!all_info->mutexes)
-		ft_error("Can't allocate the memory");
-	all_info->mutexes->forks = malloc(sizeof(pthread_mutex_t) * \
-	all_info->args->phil_number);
-	if (pthread_mutex_init(&all_info->mutexes->output, NULL))
-		return (ft_error("The mutex 'output' couldn't be init"));
-	while (i < all_info->args->phil_number)
-	{
-		if (pthread_mutex_init(&all_info->mutexes->forks[i], NULL))
-			return (ft_error("The mutex 'output' couldn't be init"));
-		i++;
-	}
+	all->sems = malloc(sizeof(t_sema));
+	if (all->sems == NULL)
+		return (ft_error("Memory couln't be allocated"));
+	sem_unlink("output");
+	all->sems->output = sem_open("output", O_CREAT, 0644, 1);
+	if (all->sems->output == SEM_FAILED)
+		return (ft_error("Semaphore 'output' failed to open"));
+	sem_unlink("forks");
+	all->sems->forks = sem_open("forks", O_CREAT, 0644, \
+	all->args->phil_num / 2);
+	if (all->sems->forks == SEM_FAILED)
+		return (ft_error("Semaphore 'forks' failed to open"));
 	return (0);
-}
-
-
-init_process(t_all *all)
-{
-	int	i;
-
-	i = 0;
-	while (i < all->args->phil_num)
-	{
-		if (fork() == 0)
-		{
-			start_act(all->philos)
-		}
-	}
 }
 
 int	ft_parse(char **argv)
@@ -98,21 +68,22 @@ int	main(int argc, char *argv[])
 	all_info.args = malloc(sizeof(t_data));
 	if (all_info.args == NULL)
 		return (0);
-	if (argc != 5 && argc != 6)
-		printf("Er: 5 or 6 arguments must be passed");
+	if ((argc != 5 && argc != 6) || argc == 1)
+		return (ft_error("arguments error\n"));
 	if (!ft_parse(argv))
-	{
-		printf("error");
-		return (0);
-	}
-	all_info.args->phil_number = ft_atoi(argv[1]);
+		return (ft_error("Parse error\n"));
+	all_info.args->phil_num = ft_atoi(argv[1]);
 	all_info.args->time_to_die = ft_atoi(argv[2]);
 	all_info.args->time_eat = ft_atoi(argv[3]);
 	all_info.args->time_sleep = ft_atoi(argv[4]);
 	all_info.args->num_of_meals = -1;
 	if (argc > 5)
 		all_info.args->num_of_meals = ft_atoi(argv[5]);
-	init_mutex(&all_info);
-	init_phil(&all_info);
-	philo_thread(&all_info);
+	if (init_sems(&all_info))
+		return (0);
+	if (init_phil(&all_info))
+		return (0);
+	if (init_process(&all_info))
+		return (0);
+	free_all(&all_info);
 }

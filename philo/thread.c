@@ -6,7 +6,7 @@
 /*   By: nluya <nluya@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/10 16:38:33 by nluya             #+#    #+#             */
-/*   Updated: 2021/11/17 19:38:11 by nluya            ###   ########.fr       */
+/*   Updated: 2021/11/27 17:23:30 by nluya            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,9 +44,9 @@ void	*start_act(void *ph_struct)
 			my_sleep(philo->args->time_eat);
 			pthread_mutex_unlock(philo->r_fork);
 			pthread_mutex_unlock(philo->l_fork);
-			ft_output(philo, "is sleeping");
+			ft_output(philo, MAGENTA"is sleeping"RESET);
 			my_sleep(philo->args->time_sleep);
-			ft_output(philo, "is thinking");
+			ft_output(philo, BLUE"is thinking"RESET);
 		}
 		else
 			break ;
@@ -54,23 +54,24 @@ void	*start_act(void *ph_struct)
 	return (NULL);
 }
 
-void	ft_make_thread(t_all *all_info, int flag, int i)
+int	ft_make_thread(t_all *all_info, int flag, int i)
 {
 	all_info->philos[i].start_time = get_cur_time();
 	if (all_info->philos[i].philo_id % 2 == flag)
 	{
 		all_info->philos[i].mutex = malloc(sizeof(t_mutexes));
 		if (!all_info->philos[i].mutex)
-			return ;
+			return (0);
 		if (pthread_create(&all_info->philos[i].thread, NULL, &start_act, \
-		 &all_info->philos[i]) != 0)
-			ft_error("thread can't be created");
+			&all_info->philos[i]) != 0)
+			return (ft_error("thread can't be created"));
 	}
 	pthread_detach(all_info->philos[i].thread);
-	usleep(10);
+	usleep(30);
+	return (0);
 }
 
-void	philo_thread(t_all *all_info)
+int	philo_thread(t_all *all_info)
 {
 	int	i;
 
@@ -81,8 +82,9 @@ void	philo_thread(t_all *all_info)
 	while (++i < all_info->args->phil_number)
 		ft_make_thread(all_info, 1, i);
 	if (pthread_create(&all_info->dead, NULL, &check_dead, all_info) != 0)
-		ft_error("thread can't be created");
+		return (ft_error("thread can't be created"));
 	if (pthread_join(all_info->dead, NULL) != 0)
-		ft_error("thread can't be joined");
+		return (ft_error("thread can't be joined"));
 	destroy_and_free(all_info);
+	return (0);
 }

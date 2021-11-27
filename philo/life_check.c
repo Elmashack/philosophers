@@ -6,7 +6,7 @@
 /*   By: nluya <nluya@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/12 16:50:54 by nluya             #+#    #+#             */
-/*   Updated: 2021/11/17 18:01:56 by nluya            ###   ########.fr       */
+/*   Updated: 2021/11/27 17:09:58 by nluya            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,10 @@ int	death_checker(t_phil_data *philos)
 	hunger_time = get_cur_time() - philos->last_meal;
 	if (philos->args->time_to_die < hunger_time)
 	{
-		ft_output(philos, "is dead");
+		pthread_mutex_lock(&philos->mutex->output);
+		printf("%ld\tThe philo %d is dead\n", get_cur_time() - \
+		philos->start_time, philos->philo_id);
+		philos->args->flag = 1;
 		return (0);
 	}
 	return (1);

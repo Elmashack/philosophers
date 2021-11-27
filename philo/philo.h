@@ -6,7 +6,7 @@
 /*   By: nluya <nluya@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/05 17:46:37 by nluya             #+#    #+#             */
-/*   Updated: 2021/11/17 18:06:01 by nluya            ###   ########.fr       */
+/*   Updated: 2021/11/27 17:06:43 by nluya            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,14 @@
 # include <pthread.h>
 # include <sys/time.h>
 
+# define RED		"\x1b[31m"
+# define GREEN		"\x1b[32m"
+# define YELLOW		"\x1b[33m"
+# define BLUE		"\x1b[34m"
+# define MAGENTA	"\x1b[35m"
 # define CYAN		"\x1b[36m"
 # define RESET		"\x1b[0m"
+
 typedef struct s_mutexes
 {
 	pthread_mutex_t	*forks;
@@ -33,6 +39,7 @@ typedef struct s_data
 	int	time_eat;
 	int	time_to_die;
 	int	num_of_meals;
+	int	flag;
 }				t_data;
 
 typedef struct s_phil_data
@@ -60,7 +67,7 @@ typedef struct s_all
 long	get_cur_time(void);
 int		eating(t_phil_data *philo);
 void	my_sleep(long time_to_wait);
-void	philo_thread(t_all *all_info);
+int		philo_thread(t_all *all_info);
 void	destroy_mutexes(t_all *all);
 void	ft_output(t_phil_data *philo, char *str);
 void	*check_dead(void *all_data);

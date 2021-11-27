@@ -6,28 +6,11 @@
 /*   By: nluya <nluya@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/12 16:50:54 by nluya             #+#    #+#             */
-/*   Updated: 2021/11/17 18:01:56 by nluya            ###   ########.fr       */
+/*   Updated: 2021/11/27 16:52:09 by nluya            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
-
-int	ft_error(char *err)
-{
-	write (1, "Error: ", 8);
-	write(1, err, ft_strlen(err));
-	return (1);
-}
-
-void	destroy_mutexes(t_all *all)
-{
-	int	i;
-
-	i = 0;
-	while (i < all->args->phil_number)
-		pthread_mutex_destroy(&all->mutexes->forks[i++]);
-	pthread_mutex_destroy(&all->mutexes->output);
-}
 
 int	death_checker(t_phil_data *philos)
 {
@@ -42,29 +25,30 @@ int	death_checker(t_phil_data *philos)
 	return (1);
 }
 
-void	*check_dead(void *all_data)
+void	*check_dead(void *philos)
 {
-	t_all	*all;
-	int		i;
-	int		meals_count;
+	t_phil_data	*phil;
+	int			meals_count;
+	long		hunger_time;
 
-	all = (t_all *)all_data;
+	phil = (t_phil_data *)philos;
 	while (1)
 	{
-		i = 0;
 		meals_count = 0;
-		while (i < all->args->phil_number)
+		hunger_time = get_cur_time() - phil->last_meal;
+		if (phil->args->time_to_die < hunger_time)
 		{
-			if (!death_checker(&all->philos[i]))
-				return (NULL);
-			meals_count += all->philos[i].eat_count;
-			i++;
+			sem_wait(phil->sems->output);
+			printf(RED"%ld\tThe phil %d is dead\n"RESET, get_cur_time() - \
+			phil->start_time, phil->philo_id);
+			exit (0);
 		}
+		meals_count += phil->eat_count;
 		if (meals_count == 0)
 		{
-			pthread_mutex_lock(&all->mutexes->output);
+			sem_wait(phil->sems->output);
 			printf("The philos are full!\n");
-			return (NULL);
+			exit (0);
 		}
 	}
 }
