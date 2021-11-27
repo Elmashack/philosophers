@@ -6,7 +6,7 @@
 /*   By: nluya <nluya@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/05 17:46:37 by nluya             #+#    #+#             */
-/*   Updated: 2021/11/27 17:06:43 by nluya            ###   ########.fr       */
+/*   Updated: 2021/11/27 18:21:02 by nluya            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,12 +34,13 @@ typedef struct s_mutexes
 }			t_mutexes;
 typedef struct s_data
 {
-	int	phil_number;
-	int	time_sleep;
-	int	time_eat;
-	int	time_to_die;
-	int	num_of_meals;
-	int	flag;
+	int		phil_number;
+	int		time_sleep;
+	int		time_eat;
+	int		time_to_die;
+	int		num_of_meals;
+	int		flag;
+	long	time;
 }				t_data;
 
 typedef struct s_phil_data
