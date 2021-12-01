@@ -6,7 +6,7 @@
 /*   By: nluya <nluya@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/10 16:38:33 by nluya             #+#    #+#             */
-/*   Updated: 2021/11/27 18:31:22 by nluya            ###   ########.fr       */
+/*   Updated: 2021/11/29 20:26:16 by nluya            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,13 +17,17 @@ void	destroy_and_free(t_all *all)
 	int	i;
 
 	i = 0;
+	
 	while (i < all->args->phil_number)
 	{
 		pthread_mutex_destroy(all->philos[i].l_fork);
 		pthread_mutex_destroy(all->philos[i].r_fork);
+		free(all->philos[i].mutex);
+		// free(&all->philos[i].args);
 		i++;
 	}
 	pthread_mutex_destroy(&all->mutexes->output);
+	free(all->mutexes->forks);
 	free(all->mutexes);
 	free(all->philos);
 	free(all->args);
@@ -35,16 +39,17 @@ void	*start_act(void *ph_struct)
 
 	philo = (t_phil_data *)ph_struct;
 	philo->last_meal = get_cur_time();
+	pthread_detach(philo->thread);
 	while (1)
 	{
 		if (philo->eat_count != 0)
 		{
 			eating(philo);
+			philo->last_meal = get_cur_time();
 			philo->eat_count--;
 			my_sleep(philo->args->time_eat);
 			pthread_mutex_unlock(philo->r_fork);
 			pthread_mutex_unlock(philo->l_fork);
-			philo->last_meal = get_cur_time();
 			ft_output(philo, MAGENTA"is sleeping"RESET);
 			my_sleep(philo->args->time_sleep);
 			ft_output(philo, BLUE"is thinking"RESET);
@@ -67,7 +72,6 @@ int	ft_make_thread(t_all *all_info, int flag, int i)
 			&all_info->philos[i]) != 0)
 			return (ft_error("thread can't be created"));
 	}
-	pthread_detach(all_info->philos[i].thread);
 	usleep(30);
 	return (0);
 }
@@ -81,7 +85,7 @@ int	philo_thread(t_all *all_info)
 	while (++i < all_info->args->phil_number)
 		ft_make_thread(all_info, 0, i);
 	i = -1;
-	usleep(30);
+	usleep(10);
 	while (++i < all_info->args->phil_number)
 		ft_make_thread(all_info, 1, i);
 	if (pthread_create(&all_info->dead, NULL, &check_dead, all_info) != 0)

@@ -6,7 +6,7 @@
 /*   By: nluya <nluya@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/15 18:10:34 by nluya             #+#    #+#             */
-/*   Updated: 2021/11/27 18:36:25 by nluya            ###   ########.fr       */
+/*   Updated: 2021/11/29 19:54:34 by nluya            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,10 +15,14 @@
 void	ft_output(t_phil_data *philo, char *str)
 {
 	pthread_mutex_lock(&philo->mutex->output);
-	if (philo->args->flag == 0)
+	if (philo->args->flag == 1)
+		return ;
+	else if (philo->args->flag == 0)
+	{
 		printf("%ld\tThe philo %d %s\n", get_cur_time() - \
 		philo->start_time, philo->philo_id, str);
-	pthread_mutex_unlock(&philo->mutex->output);
+		pthread_mutex_unlock(&philo->mutex->output);
+	}
 }
 
 int	eating(t_phil_data *philo)
