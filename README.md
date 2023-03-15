@@ -18,13 +18,11 @@ _Классический пример, используемый в информ
 # Запуск
 Основная часть:_
 ```
-  make
-  ./philosophers 5 400 200 190 3
+  ./philo/make ./philo/phil 5 400 200 190 3
 ```
  Бонусная часть:_
 ```
-  make bonus
-  ./bonus_philosophers 5 400 200 190 3
+  ./philo_bonus/make  ./philo_bonus/philo_bonus 5 400 200 190 3
 ```
 
 где:
